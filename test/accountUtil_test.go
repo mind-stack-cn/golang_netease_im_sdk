@@ -32,7 +32,7 @@ import (
 )
 
 func init()  {
-	util.Init("#YOUR APP KEY", "#YOUR APP SEC KEY")
+	nimSdk.Init("#YOUR APP KEY", "#YOUR APP SEC KEY")
 }
 
 func Test_TimeFormat(t *testing.T)  {
