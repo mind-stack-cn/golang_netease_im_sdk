@@ -27,7 +27,7 @@ import (
 	"testing"
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/mind-stack-cn/golang_netease_im_sdk/util"
+	"github.com/mind-stack-cn/golang_netease_im_sdk/nimSdk"
 )
 
 
@@ -36,7 +36,7 @@ func init()  {
 }
 
 func Test_UpdateProfile(t *testing.T)  {
-	res, err := util.UpdateProfile("lisi", "lisilisi", "", "", "", "", "", "", "")
+	res, err := nimSdk.UpdateProfile("lisi", "lisilisi", "", "", "", "", "", "", "")
 	assert.Nil(t, err, "error showedup while creating account id")
 	if err == nil{
 		fmt.Println(res)
@@ -46,7 +46,7 @@ func Test_UpdateProfile(t *testing.T)  {
 }
 
 func Test_GetProfile(t *testing.T)  {
-	res, err := util.GetProfile([]string{"lisi"})
+	res, err := nimSdk.GetProfile([]string{"lisi"})
 	assert.Nil(t, err, "error showedup while creating account id")
 	if err == nil{
 		fmt.Println(res)

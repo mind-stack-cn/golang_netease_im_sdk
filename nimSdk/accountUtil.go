@@ -27,6 +27,8 @@ import (
 	"net/url"
 	"fmt"
 	"encoding/json"
+	"errors"
+	"strconv"
 )
 
 var CREATE_ACCOUNT_ID_URL = UrlPair{"POST", NETEASE_BASE_URL + "/user/create.action"}
@@ -44,6 +46,11 @@ type NIMUInfo struct {
 	Name    string  //云信ID昵称，最大长度64字节，用来PUSH推送时显示的昵称
 	Icon    string  //云信ID头像URL，第三方可选填，最大长度1024
 	Token   string  //token
+}
+
+type nimCreateIDResp struct {
+	NetEaseResp
+	Info NIMUInfo
 }
 
 // 创建云信ID
@@ -79,13 +86,17 @@ func CreateAccid(accid string, name string, props string, icon string, token str
 		return nil,err
 	}
 
-	var resp NIMUInfo
+	var resp nimCreateIDResp
 	err = json.Unmarshal([]byte(resStr), &resp)
 	if err != nil {
 		return nil,err
 	}
 
-	return &resp,nil
+	if resp.Code != 200 {
+		return nil,errors.New("error code "+strconv.Itoa(resp.Code))
+	}
+
+	return &resp.Info,nil
 }
 
 // 云信ID更新

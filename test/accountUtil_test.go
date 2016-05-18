@@ -28,7 +28,7 @@ import (
 	"time"
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/mind-stack-cn/golang_netease_im_sdk/util"
+	"github.com/mind-stack-cn/golang_netease_im_sdk/nimSdk"
 )
 
 func init()  {
@@ -40,7 +40,7 @@ func Test_TimeFormat(t *testing.T)  {
 }
 
 func Test_CreateAccid(t *testing.T)  {
-	res, err := util.CreateAccid("lisi", "", "", "", "")
+	res, err := nimSdk.CreateAccid("lisi", "", "", "", "")
 	assert.Nil(t, err, "error showedup while creating account id")
 	if err == nil{
 		fmt.Println(res)
@@ -50,7 +50,7 @@ func Test_CreateAccid(t *testing.T)  {
 }
 
 func Test_RefreshToken(t *testing.T)  {
-	res, err := util.RefreshToken("lisi")
+	res, err := nimSdk.RefreshToken("lisi")
 	assert.Nil(t, err, "error showedup while refresh account id")
 	if err == nil{
 		fmt.Println(res)
@@ -60,7 +60,7 @@ func Test_RefreshToken(t *testing.T)  {
 }
 
 func Test_BlockAccid(t *testing.T)  {
-	res, err := util.Block("lisi")
+	res, err := nimSdk.Block("lisi")
 	assert.Nil(t, err, "error showedup while blocking account id")
 	if err == nil{
 		fmt.Println(res)
@@ -70,7 +70,7 @@ func Test_BlockAccid(t *testing.T)  {
 }
 
 func Test_UnBlockAccid(t *testing.T)  {
-	res, err := util.Unblock("lisi")
+	res, err := nimSdk.Unblock("lisi")
 	assert.Nil(t, err, "error showedup while unblocking account id")
 	if err == nil{
 		fmt.Println(res)

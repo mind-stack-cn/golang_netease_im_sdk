@@ -27,10 +27,10 @@ import "testing"
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/mind-stack-cn/golang_netease_im_sdk/util"
+	"github.com/mind-stack-cn/golang_netease_im_sdk/nimSdk"
 )
 
 func Test_GetCheckSum(t *testing.T)  {
-	var checkSum string = util.GetCheckSum("c0bd7b34271f", "aa84f22d5bde42fb91c34fca5b443fc6", "1462873857")
+	var checkSum string = nimSdk.GetCheckSum("c0bd7b34271f", "aa84f22d5bde42fb91c34fca5b443fc6", "1462873857")
 	assert.Equal(t, checkSum, "b071260cb654e91da79882deef07b77845fc3e9d", "check sum should equal")
 }

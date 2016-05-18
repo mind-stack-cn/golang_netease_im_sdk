@@ -35,9 +35,9 @@ import (
 
 const NETEASE_BASE_URL = "https://api.netease.im/nimserver"
 
-var APPKEY = "e348ec8320136d1c7009f83d03c9e044"
+var APPKEY = ""
 
-var APPSECRETKEY = "c0bd7b34271f"
+var APPSECRETKEY = ""
 
 type UrlPair struct {
 	method, url string
