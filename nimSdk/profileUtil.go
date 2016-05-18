@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2016 tony<wuhaiyang1213@gmail.com>
@@ -24,15 +24,27 @@
 package nimSdk
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
-	"encoding/json"
+	"errors"
+	"strconv"
+//	"log"
 )
 
 var UPDATE_PROFILE_URL = UrlPair{"POST", NETEASE_BASE_URL + "/user/updateUinfo.action"}
 
 var GET_PROFILE_URL = UrlPair{"POST", NETEASE_BASE_URL + "/user/getUinfos.action"}
 
+type NIMUserProfile struct {
+	NIMUInfo
+	Sign   string //用户签名，最大长度256字节
+	Emai   string //用户email，最大长度64字节
+	Birth  string //用户生日，最大长度16字节
+	Mobile string //用户mobile，最大长度32字节，只支持国内号码
+	Gender int    //用户性别，0表示未知，1表示男，2女表示女，其它会报参数错误
+	Ex     string //用户名片扩展字段，最大长度1024字节，用户可自行扩展，建议封装成JSON字符串
+}
 
 // 更新用户名片
 // accId string 云信ID，最大长度32字节，必须保证一个 APP内唯一
@@ -44,13 +56,13 @@ var GET_PROFILE_URL = UrlPair{"POST", NETEASE_BASE_URL + "/user/getUinfos.action
 // mobile string 用户mobile，最大长度32字节
 // gender string 用户性别，0表示未知，1表示男，2女表示女，其它会报参数错误
 // ex string 用户名片扩展字段，最大长度1024字节，用户可自行扩展，建议封装成JSON字符串
-func UpdateProfile(accid string, name string, icon string, sign string, email string, birth string, mobile string, gender string, ex string) (string, error) {
+func UpdateProfile(accid string, name string, icon string, sign string, email string, birth string, mobile string, gender string, ex string) (bool, error) {
 	// format request body
 	v := url.Values{}
 	if len(accid) <= 0 {
-		return "", fmt.Errorf("accid is empty")
+		return false, fmt.Errorf("accid is empty")
 	}
-	v.Add("accid", accid);
+	v.Add("accid", accid)
 	if len(name) > 0 {
 		v.Add("name", name)
 	}
@@ -75,20 +87,61 @@ func UpdateProfile(accid string, name string, icon string, sign string, email st
 	if len(ex) > 0 {
 		v.Add("ex", ex)
 	}
-	return DoNeteaseHttpRequest(v, UPDATE_PROFILE_URL.method, UPDATE_PROFILE_URL.url)
+
+	resStr,err := DoNeteaseHttpRequest(v, UPDATE_PROFILE_URL.method, UPDATE_PROFILE_URL.url)
+//	log.Println(resStr)
+
+	if err != nil {
+		return false,err
+	}
+
+	var resp NetEaseResp
+	err = json.Unmarshal([]byte(resStr), &resp)
+	if err != nil {
+		return false,err
+	}
+
+	if resp.Code != 200 {
+		return false,errors.New("error code "+strconv.Itoa(resp.Code))
+	}
+
+	return true,nil
 }
 
+
+type NIMGetProfileResp struct {
+	NetEaseResp
+	Uinfos []NIMUserProfile
+}
 
 // 获取用户名片
 // 获取用户名片，可批量
 // accId string 云信ID，最大长度32字节，必须保证一个 APP内唯一
-func GetProfile(accids []string) (string, error){
+func GetProfile(accids []string) ([]NIMUserProfile, error) {
 	// format request body
 	v := url.Values{}
 	if len(accids) <= 0 {
-		return "", fmt.Errorf("accids is empty")
+		return make([]NIMUserProfile,0), fmt.Errorf("accids is empty")
 	}
 	jsonVal, _ := json.Marshal(accids)
-	v.Add("accids", string(jsonVal));
-	return DoNeteaseHttpRequest(v, GET_PROFILE_URL.method, GET_PROFILE_URL.url)
+	v.Add("accids", string(jsonVal))
+
+	resStr,err := DoNeteaseHttpRequest(v, GET_PROFILE_URL.method, GET_PROFILE_URL.url)
+//	log.Println(resStr)
+
+	if err != nil {
+		return make([]NIMUserProfile,0),err
+	}
+
+	var resp NIMGetProfileResp
+	err = json.Unmarshal([]byte(resStr), &resp)
+	if err != nil {
+		return make([]NIMUserProfile,0),err
+	}
+
+	if resp.Code != 200 {
+		return make([]NIMUserProfile,0),errors.New("error code "+strconv.Itoa(resp.Code))
+	}
+
+	return resp.Uinfos,nil
 }
