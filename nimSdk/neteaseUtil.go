@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util
+package nimSdk
 
 import (
 	"net/http"
@@ -35,12 +35,16 @@ import (
 
 const NETEASE_BASE_URL = "https://api.netease.im/nimserver"
 
-var APPKEY = "94kid09c9ig9k1loimjg012345123456"
+var APPKEY = "e348ec8320136d1c7009f83d03c9e044"
 
-var APPSECRETKEY = "123456789012"
+var APPSECRETKEY = "c0bd7b34271f"
 
 type UrlPair struct {
 	method, url string
+}
+
+type NetEaseResp struct {
+	Code int        //状态码
 }
 
 func Init(appKey string, appSecretKey string){

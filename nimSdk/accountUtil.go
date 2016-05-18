@@ -21,11 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util
+package nimSdk
 
 import (
 	"net/url"
 	"fmt"
+	"encoding/json"
 )
 
 var CREATE_ACCOUNT_ID_URL = UrlPair{"POST", NETEASE_BASE_URL + "/user/create.action"}
@@ -38,6 +39,13 @@ var BLOCK_URL = UrlPair{"POST", NETEASE_BASE_URL + "/user/block.action"}
 
 var UNBLOCK_URL = UrlPair{"POST", NETEASE_BASE_URL + "/user/unblock.action"}
 
+type NIMUInfo struct {
+	Accid   string  //云信ID
+	Name    string  //云信ID昵称，最大长度64字节，用来PUSH推送时显示的昵称
+	Icon    string  //云信ID头像URL，第三方可选填，最大长度1024
+	Token   string  //token
+}
+
 // 创建云信ID
 // 第三方帐号导入到云信平台
 // accId string 云信ID，最大长度32字节，必须保证一个 APP内唯一（只允许字母、数字、半角下划线_、@、半角点以及半角-组成， 不区分大小写， 会统一小写处理，请注意以此接口返回结果中的accid为准）
@@ -45,11 +53,11 @@ var UNBLOCK_URL = UrlPair{"POST", NETEASE_BASE_URL + "/user/unblock.action"}
 // props string json属性，第三方可选填，最大长度1024字节
 // icon string 云信ID头像URL，第三方可选填，最大长度1024
 // token string 云信ID可以指定登录token值，最大长度128字节， 并更新，如果未指定，会自动生成token，并在创建成功后返回
-func CreateAccid(accid string, name string, props string, icon string, token string) (string, error) {
+func CreateAccid(accid string, name string, props string, icon string, token string) (*NIMUInfo, error) {
 	// format request body
 	v := url.Values{}
 	if len(accid) <= 0 {
-		return "", fmt.Errorf("accid is empty")
+		return nil, fmt.Errorf("accid is empty")
 	}
 	v.Add("accid", accid);
 	if len(name) > 0 {
@@ -65,7 +73,19 @@ func CreateAccid(accid string, name string, props string, icon string, token str
 		v.Add("token", token)
 	}
 
-	return DoNeteaseHttpRequest(v, CREATE_ACCOUNT_ID_URL.method, CREATE_ACCOUNT_ID_URL.url)
+	resStr,err := DoNeteaseHttpRequest(v, CREATE_ACCOUNT_ID_URL.method, CREATE_ACCOUNT_ID_URL.url)
+
+	if err != nil {
+		return nil,err
+	}
+
+	var resp NIMUInfo
+	err = json.Unmarshal([]byte(resStr), &resp)
+	if err != nil {
+		return nil,err
+	}
+
+	return &resp,nil
 }
 
 // 云信ID更新

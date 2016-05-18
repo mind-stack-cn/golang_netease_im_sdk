@@ -21,17 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package util
+package nimSdk
 
-import (
-	"crypto/sha1"
-	"encoding/hex"
-)
+var FRIENDSHIP_URL = UrlPair{"POST", NETEASE_BASE_URL + "/friend/add.action"}
 
-func GetCheckSum(appSecret string, nonce string, curTime string) string{
-	s:= appSecret + nonce + curTime
-	h:= sha1.New()
-	h.Write([]byte(s))
-	sha1_hash:= hex.EncodeToString(h.Sum(nil))
-	return sha1_hash
-}
+var SPECIALRELATION_URL = UrlPair{"POST", NETEASE_BASE_URL + "/user/setSpecialRelation.action"}
+
